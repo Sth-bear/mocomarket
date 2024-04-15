@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivPostIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/sample1" />
+
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tvItemTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="상품명"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:maxLines="2"
+        android:ellipsize= "end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cardView"
+        app:layout_constraintTop_toTopOf="@+id/cardView" />
+
+    <TextView
+        android:id="@+id/tvItemArea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="거래장소"
+        android:textSize="13dp"
+        app:layout_constraintStart_toStartOf="@+id/tvItemTitle"
+        app:layout_constraintTop_toBottomOf="@+id/tvItemTitle" />
+
+    <TextView
+        android:id="@+id/tvItemPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="1,000원"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/tvItemArea"
+        app:layout_constraintTop_toBottomOf="@+id/tvItemArea" />
+
+    <ImageView
+        android:id="@+id/ivMessage"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tvMessage"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:srcCompat="@drawable/sendmessage" />
+
+    <TextView
+        android:id="@+id/tvMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginEnd="10dp"
+        android:gravity="center_vertical"
+        android:text="20"
+        app:layout_constraintBottom_toBottomOf="@+id/ivMessage"
+        app:layout_constraintEnd_toStartOf="@+id/ivLike"
+        app:layout_constraintTop_toTopOf="@+id/ivMessage"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/ivLike"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvMessage"
+        app:layout_constraintEnd_toStartOf="@+id/tvLike"
+        app:layout_constraintTop_toTopOf="@+id/tvMessage"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/squareheart" />
+
+    <TextView
+        android:id="@+id/tvLike"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginEnd="5dp"
+        android:gravity="center_vertical"
+        android:text="3"
+        app:layout_constraintBottom_toBottomOf="@+id/ivLike"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/ivLike" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
