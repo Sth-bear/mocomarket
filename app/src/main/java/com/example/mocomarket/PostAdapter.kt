@@ -11,6 +11,7 @@ class PostAdapter (val mItems: MutableList<PostItem>) : RecyclerView.Adapter<Pos
 
     interface ItemClick {
         fun onClick(view: View, position: Int)
+        fun onLongClick(view: View,position: Int)
     }
 
     var itemClick: ItemClick? = null
@@ -23,6 +24,10 @@ class PostAdapter (val mItems: MutableList<PostItem>) : RecyclerView.Adapter<Pos
     override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.itemView.setOnClickListener{
             itemClick?.onClick(it,position)
+        }
+        holder.itemView.setOnLongClickListener {
+            itemClick?.onLongClick(it,position)
+            true // false로 설정시 일반클릭 이벤트가 한번 더 발생함.
         }
         holder.postIcon.setImageResource(mItems[position].aIcon)
         holder.postTitle.text = mItems[position].aName

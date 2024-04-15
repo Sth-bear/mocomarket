@@ -49,4 +49,15 @@
         app:layout_constraintTop_toTopOf="@+id/tvArea"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/down_arrow" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone"
+        android:src="@drawable/free_icon_font_angle_circle_up_7482888"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

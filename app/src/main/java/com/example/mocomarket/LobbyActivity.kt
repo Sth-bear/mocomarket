@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import android.view.animation.AlphaAnimation
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
@@ -22,6 +23,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.mocomarket.databinding.ActivityLobbyBinding
 
 class LobbyActivity : AppCompatActivity() {
@@ -45,7 +47,7 @@ class LobbyActivity : AppCompatActivity() {
         val adapter = PostAdapter(PostItemList.postItemList)
         binding.lobbyRecycler.adapter = adapter
         binding.lobbyRecycler.layoutManager = LinearLayoutManager(this)
-        binding.lobbyRecycler.addItemDecoration(DividerItemDecoration(this,LinearLayout.VERTICAL))
+        binding.lobbyRecycler.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
         adapter.itemClick = object : PostAdapter.ItemClick {
             override fun onClick(view: View, position: Int) {
 //                val postImg: Int = PostItemList.postItemList[position].aIcon
@@ -67,14 +69,57 @@ class LobbyActivity : AppCompatActivity() {
                 intent.putExtra("selectedData", selectedPost)
                 startActivity(intent)
             }
-        }
 
+            override fun onLongClick(view: View, position: Int) {
+                relly(adapter, position)
+            }
+        }
 
         binding.ivBell.setOnClickListener {
             notification()
         }
 
+        //상단이동 버튼
+        val fadeIn = AlphaAnimation(0F, 1F).apply { duration = 700 }
+        val fadeOut = AlphaAnimation(1F, 0F).apply { duration = 500 }
+        var isTop = false
 
+        binding.lobbyRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!binding.lobbyRecycler.canScrollVertically(-1) && newState == RecyclerView.SCROLL_STATE_IDLE) { //상단에 오면 사라짐처리 위로 스크롤할수없음상태 << 상단에서 당기면 표시됨. 조건 추가처리 고민필요
+                    binding.btnTop.startAnimation(fadeOut)
+                    binding.btnTop.visibility = View.GONE
+                    isTop = true
+                } else {
+                    if (isTop) {
+                        binding.btnTop.visibility = View.VISIBLE
+                        binding.btnTop.startAnimation(fadeIn)
+                        isTop = false
+                    }
+                }
+            }
+        })
+
+        binding.btnTop.setOnClickListener {
+            binding.lobbyRecycler.smoothScrollToPosition(0)
+        }
+
+    }
+
+    fun relly(adapter: PostAdapter, position: Int) {
+        var builder = AlertDialog.Builder(this)
+        builder.setTitle("상품 삭제")
+        builder.setMessage("정말 삭제하겠습니까?")
+        builder.setPositiveButton("확인") { dialog, which ->
+            PostItemList.postItemList.removeAt(position)
+            adapter.notifyItemRemoved(position) //새로고침처리
+            // adapter.notifyDataSetChanged << 변경점이 있을때 새로고침처리. 원인을 모를떄에도 되기에 최대한 명시적으로 변경.
+        }
+        builder.setNegativeButton("아니요") { dialog, which ->
+            dialog.dismiss()
+        }
+        builder.show()
     }
 
     override fun onBackPressed() {
@@ -82,11 +127,11 @@ class LobbyActivity : AppCompatActivity() {
         builder.setTitle("종료")
         builder.setMessage("정말 종료하시겠습니까?")
         builder.setIcon(R.drawable.nooo)
-        builder.setPositiveButton("확인") {
-            dialog, which -> super.onBackPressed()
+        builder.setPositiveButton("확인") { dialog, which ->
+            super.onBackPressed()
         }
-        builder.setNegativeButton("아니요") {
-            dialog, which -> dialog.dismiss()
+        builder.setNegativeButton("아니요") { dialog, which ->
+            dialog.dismiss()
         }
         builder.show()
     }
@@ -94,15 +139,15 @@ class LobbyActivity : AppCompatActivity() {
     fun notification() {
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val builder: NotificationCompat.Builder
-        if(!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+        if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
             val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                putExtra(Settings.EXTRA_APP_PACKAGE,packageName)
+                putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
             }
             startActivity(intent)
         }
         val channelId = "one-channel"
         val channelName = "My Channel One"
-        val channel = NotificationChannel (
+        val channel = NotificationChannel(
             channelId,
             channelName,
             NotificationManager.IMPORTANCE_DEFAULT
@@ -119,9 +164,10 @@ class LobbyActivity : AppCompatActivity() {
         }
         manager.createNotificationChannel(channel)
         builder = NotificationCompat.Builder(this, channelId)
-        val bitmap = BitmapFactory.decodeResource(resources,R.drawable.noti_icon)
-        val intent = Intent(this, LobbyActivity::class.java) // 추후 연결될 하면 추가
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK  //연결될 task 확인할것.
+        val bitmap = BitmapFactory.decodeResource(resources, R.drawable.noti_icon)
+        val intent = Intent(this, LobbyActivity::class.java) // 추후 연결될 화면 추가
+        intent.flags =
+            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK  //연결될 task 확인할것.
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,
@@ -141,6 +187,6 @@ class LobbyActivity : AppCompatActivity() {
             setLargeIcon(bitmap)
             addAction(R.mipmap.ic_launcher, "Action", pendingIntent)
         }
-        manager.notify(11,builder.build())
+        manager.notify(11, builder.build())
     }
 }
