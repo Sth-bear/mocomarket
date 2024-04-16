@@ -14,5 +14,6 @@ data class PostItem(
     val aArea: String,
     val aPrice: Int,
     var aLike: Int,
-    val aChat: Int
+    val aChat: Int,
+    var press: Boolean
 ) : Parcelable

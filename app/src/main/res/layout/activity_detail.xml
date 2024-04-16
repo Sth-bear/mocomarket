@@ -112,7 +112,7 @@
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/heart" />
+        app:srcCompat="@drawable/icon_love_empty" />
 
     <View
         android:id="@+id/view"

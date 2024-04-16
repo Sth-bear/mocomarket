@@ -27,7 +27,7 @@ class PostAdapter (val mItems: MutableList<PostItem>) : RecyclerView.Adapter<Pos
         }
         holder.itemView.setOnLongClickListener {
             itemClick?.onLongClick(it,position)
-            true // false로 설정시 일반클릭 이벤트가 한번 더 발생함.
+            true // false로 설정시 이후 다른 리스너나 기본동작이 올 수 있음. ex) -> 1시도 , 2시도
         }
         holder.postIcon.setImageResource(mItems[position].aIcon)
         holder.postTitle.text = mItems[position].aName
@@ -37,6 +37,11 @@ class PostAdapter (val mItems: MutableList<PostItem>) : RecyclerView.Adapter<Pos
         holder.postPrice.text = "${decimal.format(price)}원"
         holder.postLike.text = mItems[position].aLike.toString()
         holder.postMessage.text = mItems[position].aChat.toString()
+        if(mItems[position].press) {
+            holder.postLikeIcon.setImageResource(R.drawable.icon_love_full)
+        } else {
+            holder.postLikeIcon.setImageResource(R.drawable.icon_love_empty)
+        }
     }
 
     override fun getItemId(position: Int): Long {
@@ -54,5 +59,6 @@ class PostAdapter (val mItems: MutableList<PostItem>) : RecyclerView.Adapter<Pos
         val postPrice = binding.tvItemPrice
         val postLike = binding.tvLike
         val postMessage = binding.tvMessage
+        val postLikeIcon = binding.ivLike
     }
 }

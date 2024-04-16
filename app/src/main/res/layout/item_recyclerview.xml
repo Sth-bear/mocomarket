@@ -89,7 +89,7 @@
         app:layout_constraintEnd_toStartOf="@+id/tvLike"
         app:layout_constraintTop_toTopOf="@+id/tvMessage"
         app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/squareheart" />
+        app:srcCompat="@drawable/icon_love_empty" />
 
     <TextView
         android:id="@+id/tvLike"

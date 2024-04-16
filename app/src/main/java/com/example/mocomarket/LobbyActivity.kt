@@ -21,6 +21,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,39 +40,17 @@ class LobbyActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-//        binding.lobbyRecycler.apply {
-//            addItemDecoration(DividerItemDecoration(context,LinearLayout.VERTICAL))
-//            layoutManager = LinearLayoutManager(context)
-//            adapter = PostAdapter(PostItemList.postItemList)
-//        }
-
         val adapter = PostAdapter(PostItemList.postItemList)
         binding.lobbyRecycler.adapter = adapter
         binding.lobbyRecycler.layoutManager = LinearLayoutManager(this)
         binding.lobbyRecycler.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
         adapter.itemClick = object : PostAdapter.ItemClick {
             override fun onClick(view: View, position: Int) {
-//                val postImg: Int = PostItemList.postItemList[position].aIcon
-//                val postTitle:String = PostItemList.postItemList[position].aName
-//                val postIntro: String = PostItemList.postItemList[position].aIntro
-//                val postUserName: String = PostItemList.postItemList[position].aUserName
-//                val postPrice: Int = PostItemList.postItemList[position].aPrice
-//                val postArea:String = PostItemList.postItemList[position].aArea
-//                val intent = Intent(this@LobbyActivity, DetailActivity::class.java)
-//                intent.putExtra("postImg", postImg)
-//                intent.putExtra("postTitle", postTitle)
-//                intent.putExtra("postIntro", postIntro)
-//                intent.putExtra("postUserName", postUserName)
-//                intent.putExtra("postPrice", postPrice)
-//                intent.putExtra("postArea", postArea)
-//                startActivity(intent) //parcelize로 변경
                 val selectedPost = PostItemList.postItemList[position]
                 val intent = Intent(this@LobbyActivity, DetailActivity::class.java)
                 intent.putExtra("selectedData", selectedPost)
                 startActivity(intent)
             }
-
             override fun onLongClick(view: View, position: Int) {
                 relly(adapter, position)
             }
@@ -107,13 +88,33 @@ class LobbyActivity : AppCompatActivity() {
 
     }
 
+    override fun onRestart() {
+        super.onRestart() // 새로고침을 위해 재할당 및 클릭처리부분을 추가. 맘에들진않음 모듈화 하면 깔끔해지긴할듯.
+        val adapter = PostAdapter(PostItemList.postItemList)
+        binding.lobbyRecycler.adapter = adapter
+        binding.lobbyRecycler.layoutManager = LinearLayoutManager(this)
+        binding.lobbyRecycler.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
+        adapter.itemClick = object : PostAdapter.ItemClick {
+            override fun onClick(view: View, position: Int) {
+                val selectedPost = PostItemList.postItemList[position]
+                val intent = Intent(this@LobbyActivity, DetailActivity::class.java)
+                intent.putExtra("selectedData", selectedPost)
+                startActivity(intent)
+            }
+            override fun onLongClick(view: View, position: Int) {
+                relly(adapter, position)
+            }
+        }
+    }
+
     fun relly(adapter: PostAdapter, position: Int) {
-        var builder = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setTitle("상품 삭제")
         builder.setMessage("정말 삭제하겠습니까?")
         builder.setPositiveButton("확인") { dialog, which ->
             PostItemList.postItemList.removeAt(position)
             adapter.notifyItemRemoved(position) //새로고침처리
+            adapter.notifyItemRangeChanged(position, PostItemList.postItemList.size - position) //해당 코드가 없으면 삭제이후, 아래에 있는 정보들이 맞지않음. 포지션 이후의 정보들또한 재할당.
             // adapter.notifyDataSetChanged << 변경점이 있을때 새로고침처리. 원인을 모를떄에도 되기에 최대한 명시적으로 변경.
         }
         builder.setNegativeButton("아니요") { dialog, which ->
@@ -189,4 +190,5 @@ class LobbyActivity : AppCompatActivity() {
         }
         manager.notify(11, builder.build())
     }
+
 }
