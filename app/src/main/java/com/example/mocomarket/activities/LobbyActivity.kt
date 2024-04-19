@@ -1,9 +1,8 @@
-package com.example.mocomarket
+package com.example.mocomarket.activities
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.AudioAttributes
@@ -15,22 +14,31 @@ import android.view.View
 import android.view.animation.AlphaAnimation
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mocomarket.adapters.PostAdapter
+import com.example.mocomarket.R
+import com.example.mocomarket.data.DataSource
+import com.example.mocomarket.data.postItemList
 import com.example.mocomarket.databinding.ActivityLobbyBinding
+import com.example.mocomarket.viewmodels.PostViewModel
+import com.example.mocomarket.viewmodels.PostViewModelFactory
 
 class LobbyActivity : AppCompatActivity() {
     private val binding by lazy { ActivityLobbyBinding.inflate(layoutInflater) }
+    private val postViewModel by viewModels<PostViewModel> {
+        PostViewModelFactory()
+    }
+    private val postAdapter by lazy { PostAdapter() }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -40,19 +48,26 @@ class LobbyActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val adapter = PostAdapter(PostItemList.postItemList)
-        binding.lobbyRecycler.adapter = adapter
+
+        postAdapter.postList = postViewModel.postItemLiveData.value!!
+        binding.lobbyRecycler.adapter = postAdapter
         binding.lobbyRecycler.layoutManager = LinearLayoutManager(this)
+
+        postViewModel.postItemLiveData.observe(this, Observer { postList ->
+            postAdapter.changePostList(postList)
+        })
+
+
         binding.lobbyRecycler.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
-        adapter.itemClick = object : PostAdapter.ItemClick {
+        postAdapter.itemClick = object : PostAdapter.ItemClick {
             override fun onClick(view: View, position: Int) {
-                val selectedPost = PostItemList.postItemList[position]
+                val selectedPost = postViewModel.postItemLiveData.value?.get(position)
                 val intent = Intent(this@LobbyActivity, DetailActivity::class.java)
                 intent.putExtra("selectedData", selectedPost)
                 startActivity(intent)
             }
             override fun onLongClick(view: View, position: Int) {
-                relly(adapter, position)
+                relly(postAdapter, position)
             }
         }
 
@@ -88,33 +103,18 @@ class LobbyActivity : AppCompatActivity() {
 
     }
 
-    override fun onRestart() {
-        super.onRestart() // 새로고침을 위해 재할당 및 클릭처리부분을 추가. 맘에들진않음 모듈화 하면 깔끔해지긴할듯.
-        val adapter = PostAdapter(PostItemList.postItemList)
-        binding.lobbyRecycler.adapter = adapter
-        binding.lobbyRecycler.layoutManager = LinearLayoutManager(this)
-        binding.lobbyRecycler.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
-        adapter.itemClick = object : PostAdapter.ItemClick {
-            override fun onClick(view: View, position: Int) {
-                val selectedPost = PostItemList.postItemList[position]
-                val intent = Intent(this@LobbyActivity, DetailActivity::class.java)
-                intent.putExtra("selectedData", selectedPost)
-                startActivity(intent)
-            }
-            override fun onLongClick(view: View, position: Int) {
-                relly(adapter, position)
-            }
-        }
-    }
+
 
     fun relly(adapter: PostAdapter, position: Int) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("상품 삭제")
         builder.setMessage("정말 삭제하겠습니까?")
         builder.setPositiveButton("확인") { dialog, which ->
-            PostItemList.postItemList.removeAt(position)
+            postViewModel.removePost(position)
             adapter.notifyItemRemoved(position) //새로고침처리
-            adapter.notifyItemRangeChanged(position, PostItemList.postItemList.size - position) //해당 코드가 없으면 삭제이후, 아래에 있는 정보들이 맞지않음. 포지션 이후의 정보들또한 재할당.
+            adapter.notifyItemRangeChanged(position,
+                (postViewModel.postItemLiveData.value?.size)?.minus(position) ?: -1
+            ) //해당 코드가 없으면 삭제이후, 아래에 있는 정보들이 맞지않음. 포지션 이후의 정보들또한 재할당.
             // adapter.notifyDataSetChanged << 변경점이 있을때 새로고침처리. 원인을 모를떄에도 되기에 최대한 명시적으로 변경.
         }
         builder.setNegativeButton("아니요") { dialog, which ->
@@ -124,7 +124,7 @@ class LobbyActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        var builder = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this)
         builder.setTitle("종료")
         builder.setMessage("정말 종료하시겠습니까?")
         builder.setIcon(R.drawable.nooo)

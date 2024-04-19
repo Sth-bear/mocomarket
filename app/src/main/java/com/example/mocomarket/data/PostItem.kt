@@ -1,4 +1,4 @@
-package com.example.mocomarket
+package com.example.mocomarket.data
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

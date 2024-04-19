@@ -1,4 +1,4 @@
-package com.example.mocomarket
+package com.example.mocomarket.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.mocomarket.R
+import com.example.mocomarket.adapters.PostAdapter
 import com.example.mocomarket.databinding.ActivityMainBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -60,6 +62,5 @@ class loginActivity : AppCompatActivity() {
                     }
                 }
         }
-
     }
 }

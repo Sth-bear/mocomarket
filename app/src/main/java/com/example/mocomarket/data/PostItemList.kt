@@ -1,7 +1,9 @@
-package com.example.mocomarket
+package com.example.mocomarket.data
 
-object PostItemList {
-    val postItemList = mutableListOf<PostItem>(
+import com.example.mocomarket.R
+
+fun postItemList(): MutableList<PostItem> {
+    return mutableListOf(
         PostItem(aIndex = 1, aIcon = R.drawable.sample1, aName = "산지 한달된 선풍기 팝니다", aIntro = "이사가서 필요가 없어졌어요 급하게 내놓습니다", aUserName = "대현동", aArea = "서울 서대문구 창천동", aPrice = 1000, aLike = 13, aChat = 25, press = false),
         PostItem(aIndex = 2, aIcon = R.drawable.sample2, aName = "김치냉장고", aIntro = "이사로인해 내놔요", aUserName = "안마담", aArea = "인천 계양구 귤현동", aPrice = 20000, aLike = 8, aChat = 285, press = false),
         PostItem(aIndex = 3, aIcon = R.drawable.sample3, aName = "샤넬 카드지갑", aIntro = "고퀄지갑이구요\n사용감이 있어서 싸게 내어둡니다", aUserName = "코코유", aArea = "서울 서대문구 창천동", aPrice = 10000, aLike = 23, aChat = 5, press = false),
@@ -14,18 +16,18 @@ object PostItemList {
         PostItem(aIndex = 10, aIcon = R.drawable.sample10, aName = "셀린느 버킷 가방", aIntro = "22년 신세계 대전 구매입니당\n \n 셀린느 버킷백\n \n구매해서 몇번사용했어요\n까짐 스크래치 없습니다.\n타지역에서 보내는거라 택배로 진행합니당!", aUserName = "똑태현", aArea = "중구 동화동", aPrice = 190000, aLike = 40, aChat = 6, press = false)
     )
 
-    fun pushLike(aIndex: Int): Boolean {
-        val post = postItemList.find { it.aIndex == aIndex }
-        post?.let {
-            if (it.press) {
-                it.press = false
-                it.aLike--
-                return false
-            } else {
-                it.press = true
-                it.aLike++
-            }
-        }
-        return true
-    }
+//    fun pushLike(aIndex: Int): Boolean {
+//        val post = postItemList.find { it.aIndex == aIndex }
+//        post?.let {
+//            if (it.press) {
+//                it.press = false
+//                it.aLike--
+//                return false
+//            } else {
+//                it.press = true
+//                it.aLike++
+//            }
+//        }
+//        return true
+//    }
 }
