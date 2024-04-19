@@ -10,7 +10,7 @@ import com.example.mocomarket.data.PostItem
 import com.example.mocomarket.data.postItemList
 
 class PostViewModel(val dataSource: DataSource): ViewModel() {
-    val _postItemLiveData = MutableLiveData<MutableList<PostItem>>()
+    private val _postItemLiveData = MutableLiveData<MutableList<PostItem>>()
     val postItemLiveData: LiveData<MutableList<PostItem>> get() = _postItemLiveData
 
     init {
